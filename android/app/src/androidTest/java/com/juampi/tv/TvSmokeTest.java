@@ -36,16 +36,23 @@ public class TvSmokeTest {
         try(FileOutputStream stream=new FileOutputStream(file)){bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);}
     }
     @Test public void remoteNavigationCatalogAndNativePlayback() throws Throwable {
+        InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
         waitJs("document.querySelectorAll('.card').length > 0");
         assertEquals("true",js("document.documentElement.classList.contains('tv')"));
         assertEquals("true",js("!!window.JuampiNative"));
         js("document.querySelector('[data-view=all]').click(); document.querySelector('[data-play]').focus(); true");
         String first=js("document.activeElement.getAttribute('aria-label')");
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT);
+        activity.runOnUiThread(() -> {
+            activity.getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT));
+            activity.getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_RIGHT));
+        });
         waitJs("document.activeElement.getAttribute('aria-label') !== " + first);
         assertNotEquals("La flecha debe mover el foco",first,js("document.activeElement.getAttribute('aria-label')"));
         js("document.querySelector('[data-favorite]').focus(); true");
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER);
+        activity.runOnUiThread(() -> {
+            activity.getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER));
+            activity.getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER));
+        });
         waitJs("JSON.parse(localStorage.getItem('jtv-favorites') || '[]').length > 0");
         assertEquals("true",js("JSON.parse(localStorage.getItem('jtv-favorites')).length > 0"));
         screenshot("tv-catalog");
@@ -62,7 +69,7 @@ public class TvSmokeTest {
         }
         assertTrue("El reproductor nativo debe decodificar el video",decoded.get());
         screenshot("tv-native-player");
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+        activity.runOnUiThread(() -> activity.getActivity().onBackPressed());
         Thread.sleep(500);
         activity.runOnUiThread(() -> assertNull("Atrás debe liberar el reproductor",activity.getActivity().player));
         assertEquals("true",js("document.querySelectorAll('.card').length > 0"));

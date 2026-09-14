@@ -54,6 +54,8 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         root = new FrameLayout(this);
         web = new WebView(this);
+        web.setFocusable(true);
+        web.setFocusableInTouchMode(true);
         web.setBackgroundColor(Color.rgb(16,18,16));
         root.addView(web, new FrameLayout.LayoutParams(-1,-1));
         setContentView(root);
@@ -189,7 +191,7 @@ public class MainActivity extends Activity {
                 case KeyEvent.KEYCODE_DPAD_DOWN -> "ArrowDown";
                 case KeyEvent.KEYCODE_DPAD_LEFT -> "ArrowLeft";
                 case KeyEvent.KEYCODE_DPAD_RIGHT -> "ArrowRight";
-                case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> "Enter";
+                case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> "Enter";
                 default -> null;
             };
             if (direction != null) {
