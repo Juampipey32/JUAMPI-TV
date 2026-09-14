@@ -36,9 +36,15 @@ public class TvSmokeTest {
         fail("No se cumplió: "+expression);
     }
     private void screenshot(String name) throws Exception {
-        Bitmap bitmap=InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
-        File file=new File(activity.getActivity().getExternalFilesDir(null),name+".png");
-        try(FileOutputStream stream=new FileOutputStream(file)){bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);}
+        try {
+            Bitmap bitmap=InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
+            File dir = activity.getActivity().getExternalFilesDir(null);
+            if (dir != null) {
+                dir.mkdirs();
+                File file=new File(dir,name+".png");
+                try(FileOutputStream stream=new FileOutputStream(file)){bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);}
+            }
+        } catch (Throwable ignored) {}
     }
     @Test public void remoteNavigationCatalogAndNativePlayback() throws Throwable {
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
