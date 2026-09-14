@@ -36,6 +36,7 @@ import androidx.webkit.WebViewFeature;
 import org.json.JSONObject;
 import java.util.Collections;
 
+@androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
 public class MainActivity extends Activity {
     private static final String ORIGIN = "https://appassets.androidplatform.net";
     private FrameLayout root;
