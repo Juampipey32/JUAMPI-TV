@@ -42,8 +42,11 @@ public class TvSmokeTest {
         js("document.querySelector('[data-view=all]').click(); document.querySelector('[data-play]').focus(); true");
         String first=js("document.activeElement.getAttribute('aria-label')");
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_RIGHT);
+        waitJs("document.activeElement.getAttribute('aria-label') !== " + first);
         assertNotEquals("La flecha debe mover el foco",first,js("document.activeElement.getAttribute('aria-label')"));
-        js("document.querySelector('[data-favorite]').click(); true");
+        js("document.querySelector('[data-favorite]').focus(); true");
+        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER);
+        waitJs("JSON.parse(localStorage.getItem('jtv-favorites') || '[]').length > 0");
         assertEquals("true",js("JSON.parse(localStorage.getItem('jtv-favorites')).length > 0"));
         screenshot("tv-catalog");
         js("JuampiNative.postMessage(JSON.stringify({action:'play',url:'https://example.invalid/test.m3u8',name:'Prueba de integración'})); true");

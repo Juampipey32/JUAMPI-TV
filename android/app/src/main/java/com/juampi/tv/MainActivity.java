@@ -183,6 +183,29 @@ public class MainActivity extends Activity {
     }
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
         if (player != null && playerView != null && playerView.dispatchMediaKeyEvent(event)) return true;
+        if (player == null && web != null) {
+            String direction = switch(event.getKeyCode()) {
+                case KeyEvent.KEYCODE_DPAD_UP -> "ArrowUp";
+                case KeyEvent.KEYCODE_DPAD_DOWN -> "ArrowDown";
+                case KeyEvent.KEYCODE_DPAD_LEFT -> "ArrowLeft";
+                case KeyEvent.KEYCODE_DPAD_RIGHT -> "ArrowRight";
+                case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> "Enter";
+                default -> null;
+            };
+            if (direction != null) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    KeyEvent original = new KeyEvent(event);
+                    web.evaluateJavascript("window.juampiRemote ? window.juampiRemote('"+direction+"') : false", handled -> {
+                        if (!"true".equals(handled)) {
+                            // Editable inputs and native select popups keep the WebView's normal key behavior.
+                            web.dispatchKeyEvent(original);
+                            web.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, original.getKeyCode()));
+                        }
+                    });
+                }
+                return true;
+            }
+        }
         return super.dispatchKeyEvent(event);
     }
     @Override public void onBackPressed() {

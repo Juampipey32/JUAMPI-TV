@@ -21,17 +21,24 @@ export function installTVNavigation() {
     const r = el.getBoundingClientRect();
     return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden';
   });
-  document.addEventListener('keydown', event => {
-    if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key)) return;
+  window.juampiRemote = key => {
     const current = document.activeElement;
-    if (current.tagName === 'SELECT') return;
-    if (current.tagName === 'INPUT' && ['ArrowLeft','ArrowRight'].includes(event.key)) return;
+    if (key === 'Enter') {
+      if (current.matches('button,a[href]')) { current.click(); return true; }
+      return false;
+    }
+    if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(key)) return false;
+    if (current.tagName === 'SELECT') return false;
+    if (current.tagName === 'INPUT' && ['ArrowLeft','ArrowRight'].includes(key)) return false;
     const list = focusables();
     let next;
     if (!list.includes(current)) next = list[0];
-    else next = nextTarget(current.getBoundingClientRect(),list.filter(el=>el!==current).map(element=>({element,rect:element.getBoundingClientRect()})),event.key);
-    event.preventDefault();
+    else next = nextTarget(current.getBoundingClientRect(),list.filter(el=>el!==current).map(element=>({element,rect:element.getBoundingClientRect()})),key);
     if (next) { next.focus({preventScroll:true}); next.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'}); }
+    return true;
+  };
+  document.addEventListener('keydown', event => {
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key) && window.juampiRemote(event.key)) event.preventDefault();
   });
   requestAnimationFrame(()=>document.querySelector('#explore')?.focus({preventScroll:true}));
 }
