@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
-        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         settings.setUserAgentString(settings.getUserAgentString() + " JuampiTV/0.2.0");
         final WebViewAssetLoader loader = new WebViewAssetLoader.Builder()
             .addPathHandler("/", new WebViewAssetLoader.AssetsPathHandler(this)).build();

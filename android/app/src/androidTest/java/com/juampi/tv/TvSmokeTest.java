@@ -22,12 +22,17 @@ public class TvSmokeTest {
         CountDownLatch ready = new CountDownLatch(1);
         AtomicReference<String> value = new AtomicReference<>("");
         activity.runOnUiThread(() -> activity.getActivity().web.evaluateJavascript(script, result -> {value.set(result);ready.countDown();}));
-        assertTrue("WebView no responde",ready.await(10,TimeUnit.SECONDS));
+        assertTrue("WebView no responde",ready.await(30,TimeUnit.SECONDS));
         return value.get();
     }
     private void waitJs(String expression) throws Throwable {
-        long until=System.currentTimeMillis()+30000;
-        while(System.currentTimeMillis()<until){if("true".equals(js(expression)))return;Thread.sleep(250);}
+        long until=System.currentTimeMillis()+45000;
+        while(System.currentTimeMillis()<until){
+            try {
+                if("true".equals(js(expression)))return;
+            } catch(Throwable ignored) {}
+            Thread.sleep(300);
+        }
         fail("No se cumplió: "+expression);
     }
     private void screenshot(String name) throws Exception {

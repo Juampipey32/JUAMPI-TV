@@ -56,8 +56,10 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_2
+          ram-size: 3584M
+          heap-size: 512M
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -memory 3584
           script: |
             cd android && gradle connectedDebugAndroidTest --no-daemon
             adb pull /sdcard/Android/data/com.juampi.tv.debug/files/ android/app/build/reports/screenshots/
