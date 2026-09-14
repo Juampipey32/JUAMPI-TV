@@ -1,6 +1,18 @@
 # JUAMPI-TV
 
-Reproductor IPTV web con identidad propia, inspirado en la navegación de plataformas de streaming. Primera versión local, en español, creada el 14 de septiembre de 2026.
+Reproductor IPTV web con identidad propia, inspirado en la navegación de plataformas de streaming. Versión web y beta Android / Google TV, en español.
+
+## Google TV
+
+Repositorio: https://github.com/Juampipey32/JUAMPI-TV
+
+Descarga: https://juampipey32.github.io/JUAMPI-TV/
+
+Ver [Instalar en TV](INSTALAR-EN-TV.md). La beta Android 0.2.0 empaqueta la interfaz y el catálogo, incorpora Media3 ExoPlayer y navegación con control remoto. Requiere Android 8.0 o superior y WebView actualizado. La versión física de cada TV requiere comprobación.
+
+GitHub Actions compila, firma y prueba Android mediante `.github/workflows/android.yml`. La firma vive en secretos cifrados, nunca en el repositorio. Para compilar manualmente: `npm ci`, `npm run build`, `node scripts/sync-android.mjs`, y Gradle 9.3.1 en `android/`. El APK release requiere las variables `JTV_KEYSTORE_PATH` y `JTV_KEYSTORE_PASSWORD`; el alias es `juampi-tv`. El APK debug usa la firma de desarrollo. Dependencias: JDK 21, SDK 36 y build tools 36.0.0.
+
+El manifiesto permite HTTP porque existen señales IPTV HTTP; la interfaz local usa origen HTTPS mediante WebViewAssetLoader, sin acceso universal a archivos ni puentes habilitados para sitios externos. Solo los mensajes del documento principal y del origen local exacto pueden abrir el reproductor. Android no evita restricciones de acceso del proveedor.
 
 ## Abrir
 
@@ -23,7 +35,7 @@ El proyecto fuente solicitado es [Free-TV/IPTV](https://github.com/Free-TV/IPTV)
 
 Los nombres, logotipos y señales pertenecen a sus respectivos titulares. No se retransmite ni se aloja video; el navegador solicita la señal al proveedor. Los logotipos se cargan desde las URLs de la lista. La disponibilidad depende de región, servidor, codecs, HTTPS y CORS. No se implementan mecanismos para eludir restricciones del proveedor.
 
-Fotografía ambiental: [Unsplash](https://images.unsplash.com/photo-1464822759023-fed622ff2c3b), guardada localmente como `public/patagonia.jpg`; no representa contenido emitido ni una ubicación verificada. Fuentes: DM Sans y Barlow Condensed mediante Google Fonts. Íconos: Lucide. Motor: HLS.js. Dependencias y versiones exactas en `package-lock.json`.
+Fotografía ambiental: [Unsplash](https://images.unsplash.com/photo-1464822759023-fed622ff2c3b), guardada localmente como `public/patagonia.jpg`; no representa contenido emitido ni una ubicación verificada. Fuentes: DM Sans y Barlow Condensed empaquetadas localmente mediante Fontsource. Íconos: Lucide. Motor: HLS.js. Dependencias y versiones exactas en `package-lock.json`.
 
 ## Verificación
 
@@ -35,4 +47,4 @@ En la sesión inicial se verificó Canal 26: video de 1920 px, readyState 4, rep
 
 ## Alcance pendiente
 
-Es una beta local. No incluye todavía guía EPG, cuentas, sincronización, Chromecast, app nativa Smart TV, aplicación instalable offline, VOD ni despliegue público. La estética “2027” es una dirección visual, no una certificación técnica. Para una siguiente versión, priorizar EPG con fuente validada, navegación con control remoto y pruebas en el dispositivo objetivo.
+No incluye todavía guía EPG, cuentas, sincronización, Chromecast ni VOD. El APK puede abrir su catálogo sin conexión, pero las señales necesitan internet. La estética “2027” es una dirección visual, no una certificación técnica. Ver [recursos de terceros](THIRD-PARTY.md).
