@@ -11,6 +11,9 @@ import static org.junit.Assert.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.io.File;
+import java.io.FileOutputStream;
+import android.graphics.Bitmap;
 
 @RunWith(AndroidJUnit4.class)
 public class TvSmokeTest {
@@ -27,6 +30,11 @@ public class TvSmokeTest {
         while(System.currentTimeMillis()<until){if("true".equals(js(expression)))return;Thread.sleep(250);}
         fail("No se cumplió: "+expression);
     }
+    private void screenshot(String name) throws Exception {
+        Bitmap bitmap=InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
+        File file=new File(activity.getActivity().getExternalFilesDir(null),name+".png");
+        try(FileOutputStream stream=new FileOutputStream(file)){bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);}
+    }
     @Test public void remoteNavigationCatalogAndNativePlayback() throws Throwable {
         waitJs("document.querySelectorAll('.card').length > 0");
         assertEquals("true",js("document.documentElement.classList.contains('tv')"));
@@ -37,6 +45,10 @@ public class TvSmokeTest {
         assertNotEquals("La flecha debe mover el foco",first,js("document.activeElement.getAttribute('aria-label')"));
         js("document.querySelector('[data-favorite]').click(); true");
         assertEquals("true",js("JSON.parse(localStorage.getItem('jtv-favorites')).length > 0"));
+        screenshot("tv-catalog");
+        js("JuampiNative.postMessage(JSON.stringify({action:'play',url:'https://example.invalid/test.m3u8',name:'Prueba de integración'})); true");
+        Thread.sleep(500);
+        activity.runOnUiThread(() -> {assertNotNull("El mensaje web debe abrir el reproductor nativo",activity.getActivity().player);activity.getActivity().closePlayback();});
         // Native decoding is tested with a bundled debug-only media fixture, independent of broadcasters.
         activity.runOnUiThread(() -> activity.getActivity().startPlayback("asset:///test-video.mp4","Prueba local"));
         long until=System.currentTimeMillis()+20000;
@@ -46,6 +58,7 @@ public class TvSmokeTest {
             if(decoded.get())break;Thread.sleep(250);
         }
         assertTrue("El reproductor nativo debe decodificar el video",decoded.get());
+        screenshot("tv-native-player");
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
         Thread.sleep(500);
         activity.runOnUiThread(() -> assertNull("Atrás debe liberar el reproductor",activity.getActivity().player));
