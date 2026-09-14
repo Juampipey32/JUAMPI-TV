@@ -1,0 +1,76 @@
+name: APK Google TV
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+      - name: Compilar interfaz y probar M3U y control remoto
+        run: |
+          npm ci
+          npm test
+          npm run build
+          node scripts/sync-android.mjs
+      - name: Restaurar firma privada
+        env:
+          KEYSTORE_BASE64: ${{ secrets.JTV_KEYSTORE_BASE64 }}
+        run: |
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/juampi-tv.jks"
+      - name: Generar APK firmado y pruebas instrumentadas
+        working-directory: android
+        env:
+          JTV_KEYSTORE_PATH: ${{ runner.temp }}/juampi-tv.jks
+          JTV_KEYSTORE_PASSWORD: ${{ secrets.JTV_KEYSTORE_PASSWORD }}
+        run: gradle assembleRelease assembleDebug assembleDebugAndroidTest lintRelease --no-daemon
+      - name: Habilitar aceleración del emulador
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Verificar con control remoto y video en Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: cd android && gradle connectedDebugAndroidTest --no-daemon
+      - name: Preparar descarga
+        run: |
+          mkdir -p release
+          cp android/app/build/outputs/apk/release/app-release.apk release/JUAMPI-TV.apk
+          cd release && sha256sum JUAMPI-TV.apk > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JUAMPI-TV-google-tv
+          path: release/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-test-reports
+          path: |
+            android/app/build/reports/
+            android/app/build/outputs/androidTest-results/
+      - name: Borrar firma temporal
+        if: always()
+        run: rm -f "$RUNNER_TEMP/juampi-tv.jks"

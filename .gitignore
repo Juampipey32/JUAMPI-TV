@@ -1,0 +1,13 @@
+node_modules/
+dist/
+artifacts/
+android/.gradle/
+android/**/build/
+android/app/src/main/assets/
+android/local.properties
+*.jks
+*.keystore
+*.p12
+*.apk
+*.aab
+signing.properties
