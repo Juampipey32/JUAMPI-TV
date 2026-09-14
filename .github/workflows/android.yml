@@ -63,6 +63,8 @@ jobs:
         run: |
           mkdir -p release
           cp android/app/build/outputs/apk/release/app-release.apk release/JUAMPI-TV.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/JUAMPI-TV.apk > release/SIGNATURE.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging release/JUAMPI-TV.apk > release/ANDROID-MANIFEST.txt
           cd release && sha256sum JUAMPI-TV.apk > SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
