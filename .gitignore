@@ -1,6 +1,7 @@
 node_modules/
 dist/
-artifacts/
+artifacts/*
+!artifacts/release-notes.md
 android/.gradle/
 android/**/build/
 android/app/src/main/assets/
