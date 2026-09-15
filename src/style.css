@@ -14,3 +14,28 @@
 /* Subtítulo de información en reproductor */
 .player-sub{font-size:12px;color:#919989;margin-top:2px}
 #volume-slider{width:80px;accent-color:#d4fa46;cursor:pointer;vertical-align:middle}
+
+/* Grillas compactas y posters VOD (Estilo Magis TV) */
+.grid.poster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px 12px}
+.grid.compact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:16px 14px}
+
+.poster-card{position:relative;min-width:0}
+.poster-card .channel-play{text-align:left;display:block;width:100%;padding:0}
+.poster-art{position:relative;aspect-ratio:2/3;border-radius:8px;background:radial-gradient(ellipse at 75% 20%,#ffffff0a,transparent 70%),var(--card-color);overflow:hidden;border:1px solid #ffffff14;transition:transform .2s,border-color .2s}
+.poster-img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;display:block}
+.poster-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;text-align:center;gap:8px}
+.poster-fallback svg{width:26px;height:26px;color:var(--accent);opacity:.85}
+.poster-fallback strong{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;line-height:1.2;text-transform:uppercase;color:#f0f2eb;max-width:100%;overflow-wrap:anywhere}
+.poster-art.has-poster .poster-fallback{display:none}
+.poster-art.no-poster .poster-img{display:none}
+.poster-overlay{position:absolute;inset:auto 0 0 0;padding:24px 8px 8px;background:linear-gradient(0deg,#0a0d0aee 0%,#0a0d0ab0 60%,transparent 100%);pointer-events:none;z-index:1}
+.poster-title{font-size:11px;font-weight:600;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f5f5f0}
+.poster-genre{font-size:9px;color:#a2aba0;display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.poster-card .favorite{position:absolute;top:6px;right:6px;bottom:auto;background:#00000088;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;padding:0;z-index:2}
+.poster-card .favorite svg{width:14px;height:14px}
+.poster-card .channel-play:hover .poster-art,.poster-card .channel-play:focus-visible .poster-art{border-color:#badd4180;transform:translateY(-3px)}
+.poster-card .channel-play:hover .play-circle,.poster-card .channel-play:focus-visible .play-circle{opacity:1;transform:scale(1)}
+
+.compact-card{position:relative;min-width:0}
+.compact-card .channel-art{aspect-ratio:1.6}
+

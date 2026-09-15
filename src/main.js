@@ -1,13 +1,13 @@
 import {
   createIcons, House, Radio, Film, Tv, Bookmark, History, ListPlus, Plus, Play, Pause,
   Search, RefreshCw, ArrowDown, ArrowUpRight, X, RotateCw, PictureInPicture2, Maximize,
-  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling
+  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling, Trophy
 } from 'lucide';
 
 const icons = {
   House, Radio, Film, Tv, Bookmark, History, ListPlus, Plus, Play, Pause,
   Search, RefreshCw, ArrowDown, ArrowUpRight, X, RotateCw, PictureInPicture2, Maximize,
-  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling
+  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling, Trophy
 };
 
 import { parseM3U } from './playlist.js';
@@ -39,14 +39,16 @@ if (!Array.isArray(imported)) imported = [];
 
 const CATALOGS = {
   live: { id: 'live', name: 'En vivo', title: 'Televisión en vivo', file: '/catalog.m3u8', remote: 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8', icon: 'radio' },
-  movies: { id: 'movies', name: 'Películas', title: 'Cine y Películas 24/7', file: '/movies.m3u8', remote: 'https://iptv-org.github.io/iptv/categories/movies.m3u', icon: 'film' },
-  series: { id: 'series', name: 'Series', title: 'Series de TV y Maratones', file: '/series.m3u8', remote: 'https://iptv-org.github.io/iptv/categories/series.m3u', icon: 'tv' }
+  sports: { id: 'sports', name: 'Deportes', title: 'Deportes Argentina & Latam', file: '/sports.m3u8', remote: 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8', icon: 'trophy' },
+  movies: { id: 'movies', name: 'Películas', title: 'Cine y Películas On Demand', file: '/movies.m3u8', remote: 'https://iptv-org.github.io/iptv/categories/movies.m3u', icon: 'film' },
+  series: { id: 'series', name: 'Series', title: 'Series de TV On Demand', file: '/series.m3u8', remote: 'https://iptv-org.github.io/iptv/categories/series.m3u', icon: 'tv' }
 };
 
 const CATEGORY_SHORTCUTS = {
   live: ['Todos', 'Noticias', 'Deportes', 'Música', 'Documentales', 'Entretenimiento', 'Infantil'],
-  movies: ['Todos', 'Acción', 'Comedia', 'Drama', 'Terror', 'Ciencia Ficción', 'Familiar', 'Clásicos'],
-  series: ['Todos', 'Drama', 'Comedia', 'Acción', 'Crimen', 'Animación', 'Clásicos']
+  sports: ['Todos', 'Fútbol', 'Argentina', 'Polideportivo', 'Automovilismo', 'Noticias Deportivas'],
+  movies: ['Todos', 'Acción', 'Comedia', 'Drama', 'Terror', 'Ciencia Ficción', 'Animación', 'Suspenso', 'Romance', 'Clásicos'],
+  series: ['Todos', 'Drama', 'Comedia', 'Acción', 'Crimen', 'Animación', 'Sci-Fi', 'Documental']
 };
 
 let currentCatalog = 'live';
@@ -84,6 +86,7 @@ $('#app').innerHTML = `
   <nav aria-label="Navegación principal">
     <button data-view="home" class="active" aria-label="Inicio">${icon('house')}<span>Inicio</span></button>
     <button data-view="all" aria-label="TV en vivo">${icon('radio')}<span>En vivo</span></button>
+    <button data-view="sports" aria-label="Deportes">${icon('trophy')}<span>Deportes</span></button>
     <button data-view="movies" aria-label="Películas">${icon('film')}<span>Películas</span></button>
     <button data-view="series" aria-label="Series">${icon('tv')}<span>Series</span></button>
     <button data-view="favorites" aria-label="Mi lista">${icon('bookmark')}<span>Mi lista</span></button>
@@ -95,9 +98,10 @@ $('#app').innerHTML = `
 
 <main>
   <header>
-    <a href="#" class="wordmark">JUAMPI<span>—TV</span><small>BETA 0.3.0</small></a>
+    <a href="#" class="wordmark">JUAMPI<span>—TV</span><small>BETA 0.4.0</small></a>
     <div class="header-right">
       <span class="live-label"><b></b> TELEVISIÓN SIN FRONTERAS</span>
+      <button class="quiet" data-catalog-switch="sports">${icon('trophy')} Deportes</button>
       <button class="quiet" data-catalog-switch="movies">${icon('film')} Películas</button>
       <button class="quiet" data-catalog-switch="series">${icon('tv')} Series</button>
       <button class="quiet" data-import>${icon('plus')} Agregar lista</button>
@@ -108,20 +112,21 @@ $('#app').innerHTML = `
   <section class="hero">
     <div class="hero-image"></div>
     <div class="hero-content">
-      <div class="eyebrow"><span class="pill">CINE · SERIES · TV</span> EN VIVO Y SIN COSTO</div>
+      <div class="eyebrow"><span class="pill">MAGIS EDITION · CINE · SERIES · DEPORTES</span> EN VIVO Y ON DEMAND</div>
       <h1>TU MUNDO.<br><em>EN VIVO.</em></h1>
-      <p>Cine 24/7, series, noticias y la televisión que te gusta.<br>Directo en tu televisor, sin necesidad de dejar la PC prendida.</p>
+      <p>Cine on-demand, series completas, canales de deportes de Argentina y televisión en directo.<br>Directo en tu televisor, sin suscripción ni dejar la PC prendida.</p>
       <div class="hero-actions">
         <button id="explore" class="primary">${icon('play')} Explorar canales</button>
-        <button data-view="movies" class="glass">${icon('film')} Ver Películas</button>
-        <button data-view="series" class="glass">${icon('tv')} Ver Series</button>
+        <button data-view="sports" class="glass">${icon('trophy')} Deportes AR</button>
+        <button data-view="movies" class="glass">${icon('film')} Películas VOD</button>
+        <button data-view="series" class="glass">${icon('tv')} Series VOD</button>
         <button data-view="favorites" class="glass">${icon('bookmark')} Mi lista</button>
       </div>
       <div class="hero-meta">
-        <span>01 / CATÁLOGO COMPLETO</span><span class="line"></span><span>PELÍCULAS · SERIES · TV EN DIRECTO</span>
+        <span>01 / CATÁLOGO COMPLETO</span><span class="line"></span><span>PELÍCULAS · SERIES · DEPORTES ARGENTINA · TV</span>
       </div>
     </div>
-    <div class="scene-caption">EXPLORÁ SIN LÍMITES <span>MÁS DE 3.000 SEÑALES ABIERTAS</span><small>Ambientación JUAMPI-TV</small></div>
+    <div class="scene-caption">EXPLORÁ SIN LÍMITES <span>MÁS DE 10.000 TÍTULOS Y SEÑALES</span><small>Ambientación JUAMPI-TV</small></div>
     <div class="vertical-label">MENOS SCROLL. MÁS MUNDO.</div>
   </section>
 
@@ -136,6 +141,7 @@ $('#app').innerHTML = `
 
     <div class="catalog-switcher">
       <button class="cat-tab selected" data-cat-tab="live">${icon('radio')} Canales de TV</button>
+      <button class="cat-tab" data-cat-tab="sports">${icon('trophy')} Deportes AR</button>
       <button class="cat-tab" data-cat-tab="movies">${icon('film')} Cine & Películas</button>
       <button class="cat-tab" data-cat-tab="series">${icon('tv')} Series de TV</button>
     </div>
@@ -249,7 +255,7 @@ function filtered() {
     return matchCountry && matchCategory && matchQuery && matchFav && matchHist;
   }).sort((a,b) => {
     if (view === 'history') return history.indexOf(a.id) - history.indexOf(b.id);
-    if (currentCatalog === 'live') return (a.country === 'AR' ? -1 : 0) - (b.country === 'AR' ? -1 : 0);
+    if (currentCatalog === 'live' || currentCatalog === 'sports') return (a.country === 'AR' ? -1 : 0) - (b.country === 'AR' ? -1 : 0);
     return 0;
   });
 }
@@ -260,14 +266,16 @@ function render() {
   const focusKind = focused?.hasAttribute?.('data-favorite') ? 'favorite' : 'play';
   const list = filtered();
   currentPlaylist = list;
+  const isVod = currentCatalog === 'movies' || currentCatalog === 'series';
 
-  $('#count').textContent = `${list.length.toLocaleString('es-AR')} canales · ${sourceName}`;
+  $('#count').textContent = `${list.length.toLocaleString('es-AR')} ${isVod ? 'títulos' : 'canales'} · ${sourceName}`;
   const titleMap = {
     home: 'Descubrí en vivo',
     all: 'Canales de TV en vivo',
     live: 'Canales de TV en vivo',
-    movies: 'Cine y Películas 24/7',
-    series: 'Series de TV y Maratones',
+    sports: 'Deportes Argentina & Latam',
+    movies: 'Cine y Películas On Demand',
+    series: 'Series de TV On Demand',
     favorites: 'Mi lista de favoritos',
     history: 'Vistos recientemente'
   };
@@ -292,40 +300,81 @@ function render() {
     b.classList.toggle('selected', b.dataset.pill === category);
   });
 
-  $('#grid').innerHTML = list.length ? list.slice(0, limit).map((c, i) => `
-    <article class="card" style="--card-color:${palettes[i % palettes.length]}">
-      <button class="channel-play" data-play="${esc(c.id)}" aria-label="Ver ${esc(c.name)}">
-        <div class="channel-art">
-          <span class="channel-number">${String(i + 1).padStart(2, '0')}</span>
-          <span class="signal">${c.external ? 'WEB' : (currentCatalog === 'movies' ? 'CINE' : currentCatalog === 'series' ? 'SERIE' : 'TV')}</span>
-          <div class="logo-box">
-            ${c.logo && /^https?:\/\//.test(c.logo) ? `<img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.logo)}" alt=""/>` : ''}
-            <strong>${esc(c.name)}</strong>
+  const gridEl = $('#grid');
+  gridEl.className = isVod ? 'grid poster-grid' : 'grid compact-grid';
+
+  gridEl.innerHTML = list.length ? list.slice(0, limit).map((c, i) => {
+    if (isVod) {
+      const typeLabel = currentCatalog === 'movies' ? 'CINE' : 'SERIE';
+      const fallbackIcon = currentCatalog === 'movies' ? 'film' : 'tv';
+      const posterUrl = (c.logo && /^https?:\/\//.test(c.logo)) ? c.logo : '';
+      return `
+        <article class="card poster-card" style="--card-color:${palettes[i % palettes.length]}">
+          <button class="channel-play" data-play="${esc(c.id)}" aria-label="Ver ${esc(c.name)}">
+            <div class="poster-art ${posterUrl ? '' : 'no-poster'}">
+              <span class="signal">${typeLabel}</span>
+              ${posterUrl ? `<img class="poster-img" loading="lazy" referrerpolicy="no-referrer" src="${esc(posterUrl)}" alt=""/>` : ''}
+              <div class="poster-fallback">
+                ${icon(fallbackIcon)}
+                <strong>${esc(c.name)}</strong>
+              </div>
+              <span class="play-circle">${icon('play')}</span>
+              <div class="poster-overlay">
+                <h3 class="poster-title">${esc(c.name)}</h3>
+                <span class="poster-genre">${esc(c.group || typeLabel)}</span>
+              </div>
+            </div>
+          </button>
+          <button class="favorite ${favorites.includes(c.id) ? 'saved' : ''}" data-favorite="${esc(c.id)}" aria-label="${favorites.includes(c.id) ? 'Quitar de' : 'Agregar a'} mi lista: ${esc(c.name)}" aria-pressed="${favorites.includes(c.id)}">
+            ${icon('bookmark')}
+          </button>
+        </article>
+      `;
+    }
+
+    const signalLabel = c.external ? 'WEB' : (currentCatalog === 'sports' ? 'DEPORTE' : 'TV');
+    return `
+      <article class="card compact-card" style="--card-color:${palettes[i % palettes.length]}">
+        <button class="channel-play" data-play="${esc(c.id)}" aria-label="Ver ${esc(c.name)}">
+          <div class="channel-art">
+            <span class="channel-number">${String(i + 1).padStart(2, '0')}</span>
+            <span class="signal">${signalLabel}</span>
+            <div class="logo-box">
+              ${c.logo && /^https?:\/\//.test(c.logo) ? `<img loading="lazy" referrerpolicy="no-referrer" src="${esc(c.logo)}" alt=""/>` : ''}
+              <strong>${esc(c.name)}</strong>
+            </div>
+            <span class="play-circle">${icon('play')}</span>
+            <div class="art-line"></div>
           </div>
-          <span class="play-circle">${icon('play')}</span>
-          <div class="art-line"></div>
-        </div>
-        <div class="channel-info">
-          <h3>${esc(c.name)}</h3>
-          <p>${esc(c.group)} <span>• ${c.external ? 'Fuente externa' : 'Señal en vivo'}</span></p>
-        </div>
-      </button>
-      <button class="favorite ${favorites.includes(c.id) ? 'saved' : ''}" data-favorite="${esc(c.id)}" aria-label="${favorites.includes(c.id) ? 'Quitar de' : 'Agregar a'} mi lista: ${esc(c.name)}" aria-pressed="${favorites.includes(c.id)}">
-        ${icon('bookmark')}
-      </button>
-    </article>
-  `).join('') : `
+          <div class="channel-info">
+            <h3>${esc(c.name)}</h3>
+            <p>${esc(c.group)} <span>• ${c.external ? 'Fuente externa' : 'En vivo'}</span></p>
+          </div>
+        </button>
+        <button class="favorite ${favorites.includes(c.id) ? 'saved' : ''}" data-favorite="${esc(c.id)}" aria-label="${favorites.includes(c.id) ? 'Quitar de' : 'Agregar a'} mi lista: ${esc(c.name)}" aria-pressed="${favorites.includes(c.id)}">
+          ${icon('bookmark')}
+        </button>
+      </article>
+    `;
+  }).join('') : `
     <div class="empty">
       ${icon(view === 'favorites' ? 'bookmark' : 'search')}
-      <h3>${view === 'favorites' ? 'Tu próxima señal favorita te espera' : view === 'history' ? 'Todavía no abriste ningún canal' : 'No encontramos señales'}</h3>
-      <p>${view === 'favorites' ? 'Guardá canales con el ícono de marcador.' : view === 'history' ? 'Los canales que abras van a aparecer acá.' : 'Probá otra búsqueda o seleccioná otra categoría o país.'}</p>
+      <h3>${view === 'favorites' ? 'Tu próxima señal favorita te espera' : view === 'history' ? 'Todavía no abriste ningún contenido' : 'No encontramos resultados'}</h3>
+      <p>${view === 'favorites' ? 'Guardá contenido con el ícono de marcador.' : view === 'history' ? 'Lo que reproduzcas va a aparecer acá.' : 'Probá otra búsqueda o seleccioná otra categoría o país.'}</p>
     </div>
   `;
 
   $('#more').hidden = list.length <= limit;
   $('#source').textContent = `Fuente: ${sourceName}`;
 
-  $('#grid').querySelectorAll('img').forEach(img => {
+  gridEl.querySelectorAll('.poster-img').forEach(img => {
+    img.onload = () => img.closest('.poster-art')?.classList.add('has-poster');
+    img.onerror = () => {
+      img.closest('.poster-art')?.classList.add('no-poster');
+      img.remove();
+    };
+  });
+  gridEl.querySelectorAll('.logo-box img').forEach(img => {
     img.onload = () => img.parentElement?.classList.add('has-logo');
     img.onerror = () => img.remove();
   });
@@ -417,9 +466,14 @@ async function play(channel) {
   stop();
   current = channel;
   const video = $('#video');
-  $('#playing-name').textContent = channel.name;
-  $('#player-category').textContent = (currentCatalog === 'movies' ? 'CINE & PELÍCULAS' : currentCatalog === 'series' ? 'SERIES DE TV' : 'TELEVISIÓN EN VIVO');
-  $('#player-channel-meta').textContent = `Canal ${currentIndex + 1} de ${list.length} · ${channel.group || sourceName}`;
+  const catLabel = currentCatalog === 'sports'
+    ? 'DEPORTES EN VIVO'
+    : (currentCatalog === 'movies'
+      ? 'PELÍCULA / CINE'
+      : (currentCatalog === 'series' ? 'SERIE / EPISODIO' : 'TELEVISIÓN EN VIVO'));
+  $('#player-category').textContent = catLabel;
+  const isVod = currentCatalog === 'movies' || currentCatalog === 'series';
+  $('#player-channel-meta').textContent = `${isVod ? 'Título' : 'Canal'} ${currentIndex + 1} de ${list.length} · ${channel.group || sourceName}`;
   $('#external').href = channel.url;
   $('#quality').innerHTML = '<option value="-1">Calidad automática</option>';
   $('#quality').disabled = true;
@@ -636,7 +690,10 @@ document.addEventListener('click', async e => {
   // View navigation in sidebar
   if (b.dataset.view) {
     const v = b.dataset.view;
-    if (v === 'movies') {
+    if (v === 'sports') {
+      view = 'sports';
+      await switchCatalog('sports');
+    } else if (v === 'movies') {
       view = 'movies';
       await switchCatalog('movies');
     } else if (v === 'series') {
