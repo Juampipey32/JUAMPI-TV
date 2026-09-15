@@ -29,7 +29,22 @@ if (isTV) document.documentElement.classList.add('tv');
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const icon = name => `<i data-lucide="${name}"></i>`;
+const icon = (name, extraClass = '') => {
+  const pascal = name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+  const def = icons[pascal] || icons[name];
+  if (!def) {
+    return `<svg class="lucide lucide-${name} ${extraClass}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>`;
+  }
+  const [tag, attrs, children] = def;
+  const combinedClass = `lucide lucide-${name} ${attrs.class || ''} ${extraClass}`.trim();
+  const attrEntries = Object.entries({ ...attrs, class: combinedClass });
+  const attrStr = attrEntries.map(([k, v]) => `${k}="${v}"`).join(' ');
+  const inner = (children || []).map(([cTag, cAttrs]) => {
+    const cAttrStr = Object.entries(cAttrs || {}).map(([k, v]) => `${k}="${v}"`).join(' ');
+    return `<${cTag} ${cAttrStr}></${cTag}>`;
+  }).join('');
+  return `<${tag} ${attrStr}>${inner}</${tag}>`;
+};
 const read = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
 const save = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { toast('Almacenamiento lleno.'); } };
 
@@ -61,7 +76,11 @@ let timeout = null;
 let activeFeatured = null;
 
 const palettes = ['#27372d','#323044','#243d43','#493029','#343b27','#29334b'];
-const refreshIcons = () => createIcons({ icons });
+const refreshIcons = () => {
+  try {
+    createIcons({ icons });
+  } catch {}
+};
 
 function toast(message) {
   const t = $('#toast');
@@ -157,8 +176,9 @@ $('#app').innerHTML = `
         <input id="search" type="search" placeholder="Buscá películas, series, canales..." aria-label="Buscar contenido"/>
         <kbd>/</kbd>
       </label>
-      <button class="quiet" data-import>${icon('plus')} <span>Agregar M3U</span></button>
-      <div class="user">J</div>
+      <button class="quiet" data-import title="Importar lista M3U personal">${icon('plus')} <span>Agregar M3U</span></button>
+      <a class="quiet download-apk-btn" href="https://github.com/Juampipey32/JUAMPI-TV/releases/latest/download/JUAMPI-TV.apk" title="Descargar APK para Android / Google TV">${icon('arrow-down')} <span>APK TV</span></a>
+      <div class="user" title="JUAMPI-TV">J</div>
     </div>
   </header>
 
@@ -406,7 +426,7 @@ function updateHero() {
   if (feat.poster) {
     $('#hero-bg').style.backgroundImage = `linear-gradient(90deg, #101710f5 0%, #121a14cc 40%, #10121011 85%), linear-gradient(0deg, #101210 0%, transparent 40%), url('${feat.poster}')`;
   } else {
-    $('#hero-bg').style.backgroundImage = `linear-gradient(90deg, #101710f5 0%, #121a14cc 40%, #10121011 85%), linear-gradient(0deg, #101210 0%, transparent 40%), url('/patagonia.jpg')`;
+    $('#hero-bg').style.backgroundImage = `linear-gradient(90deg, #101710f5 0%, #121a14cc 40%, #10121011 85%), linear-gradient(0deg, #101210 0%, transparent 40%), url('./patagonia.jpg')`;
   }
 }
 
@@ -1157,15 +1177,16 @@ document.addEventListener('keydown', e => {
 
 // Load all catalogs asynchronously
 async function loadAllCatalogs() {
+  const bust = `v=0.6.0_${Date.now()}`;
   const tasks = [
     // Sports
-    fetch('/sports.m3u8').then(r => r.text()).then(t => { catalogs.sports = parseM3U(t); }).catch(() => {}),
+    fetch(`./sports.m3u8?${bust}`).then(r => r.text()).then(t => { catalogs.sports = parseM3U(t); }).catch(e => console.warn('No se pudo cargar sports:', e)),
     // Movies
-    fetch('/movies.m3u8').then(r => r.text()).then(t => { catalogs.movies = parseM3U(t); }).catch(() => {}),
+    fetch(`./movies.m3u8?${bust}`).then(r => r.text()).then(t => { catalogs.movies = parseM3U(t); }).catch(e => console.warn('No se pudo cargar movies:', e)),
     // Series
-    fetch('/series-catalog.json').then(r => r.json()).then(data => { catalogs.series = data; }).catch(() => {}),
+    fetch(`./series-catalog.json?${bust}`).then(r => r.json()).then(data => { catalogs.series = data; }).catch(e => console.warn('No se pudo cargar series:', e)),
     // Live
-    fetch('/catalog.m3u8').then(r => r.text()).then(t => { catalogs.live = parseM3U(t); }).catch(() => {})
+    fetch(`./catalog.m3u8?${bust}`).then(r => r.text()).then(t => { catalogs.live = parseM3U(t); }).catch(e => console.warn('No se pudo cargar catalog:', e))
   ];
 
   await Promise.all(tasks);

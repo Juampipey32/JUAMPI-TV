@@ -1,2 +1,13 @@
 import { defineConfig } from 'vite';
-export default defineConfig({build:{rollupOptions:{output:{manualChunks(id){if(id.includes('hls.js'))return 'player';}}}}});
+export default defineConfig({
+  base: './',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('hls.js')) return 'player';
+        }
+      }
+    }
+  }
+});

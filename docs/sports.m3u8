@@ -1,0 +1,31 @@
+#EXTM3U
+#EXTINF:-1 tvg-name="TyC Sports (Señal en vivo)" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/TyC_Sports_logo.svg/512px-TyC_Sports_logo.svg.png" tvg-country="AR" group-title="Deportes Argentina",TyC Sports (Señal en vivo)
+http://45.181.87.106/TYCSPORTSHD/index.m3u8
+#EXTINF:-1 tvg-name="DeporTV HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/DeporTV_%28Argentina%29_logo_2016.png/512px-DeporTV_%28Argentina%29_logo_2016.png" tvg-country="AR" group-title="Deportes Argentina",DeporTV HD
+https://5fb24b460df87.streamlock.net/live-cont.ar/deportv/playlist.m3u8
+#EXTINF:-1 tvg-name="Televisión Pública Deportes" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Televisi%C3%B3n_P%C3%BAblica_Argentina_%28logo%29.png/512px-Televisi%C3%B3n_P%C3%BAblica_Argentina_%28logo%29.png" tvg-country="AR" group-title="Deportes Argentina",Televisión Pública Deportes
+https://www.youtube.com/user/TVPublicaArgentina/live
+#EXTINF:-1 tvg-name="Canal Showsport (Córdoba)" tvg-logo="https://i.imgur.com/0L9tW3Z.png" tvg-country="AR" group-title="Deportes Argentina",Canal Showsport (Córdoba)
+https://unlimited1-us.dps.live/showsport/showsport.smil/playlist.m3u8
+#EXTINF:-1 tvg-name="CnAr Deportes" tvg-logo="https://i.imgur.com/07ki2df.png" tvg-country="AR" group-title="Deportes Argentina",CnAr Deportes
+https://stmv1.cnarlatam.com/cnardeportes2/cnardeportes2/playlist.m3u8
+#EXTINF:-1 tvg-name="DSports Panregional" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/DirecTV_Sports_Latin_America_%282018%29.png/512px-DirecTV_Sports_Latin_America_%282018%29.png" tvg-country="US" group-title="Fútbol & Panregional",DSports Panregional
+http://138.121.113.175:8000/play/a0cj/index.m3u8
+#EXTINF:-1 tvg-name="DSports 2" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/DIRECTV_Sports_2_Latin_America_%282018%29.svg/512px-DIRECTV_Sports_2_Latin_America_%282018%29.svg.png" tvg-country="US" group-title="Fútbol & Panregional",DSports 2
+http://138.121.113.175:8000/play/a0ca/index.m3u8
+#EXTINF:-1 tvg-name="Fox Sports en Español" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/FOX_Deportes_logo.png/512px-FOX_Deportes_logo.png" tvg-country="US" group-title="Cadenas Deportivas",Fox Sports en Español
+https://apollo.production-public.tubi.io/live/fox-sports-esp
+#EXTINF:-1 tvg-name="ESPN Deportes" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/ESPN_Deportes.svg/512px-ESPN_Deportes.svg.png" tvg-country="US" group-title="Cadenas Deportivas",ESPN Deportes
+https://apollo.production-public.tubi.io/live/espn-deportes
+#EXTINF:-1 tvg-name="Claro Sports México & Latam" tvg-logo="https://i.imgur.com/n0kd17r.png" tvg-country="MX" group-title="Polideportivo",Claro Sports México & Latam
+https://live-clarosports.akamaized.net/live/clarosports/index.m3u8
+#EXTINF:-1 tvg-name="Azteca Deportes Network" tvg-logo="https://match-images.icdb.tv/5913207f2494844101287828e87625eb.jpg" tvg-country="MX" group-title="Polideportivo",Azteca Deportes Network
+http://181.119.66.28:8081/AZTECA-DEPORTES-HD/index.m3u8
+#EXTINF:-1 tvg-name="FIFA+ Hispanic America" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/FIFA%2B_(2025).svg/512px-FIFA%2B_(2025).svg.png" tvg-country="INT" group-title="Fútbol Internacional",FIFA+ Hispanic America
+https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/fifa-latam/index.m3u8
+#EXTINF:-1 tvg-name="DAZN Combat Rakuten" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/DAZN_logo.svg/512px-DAZN_logo.svg.png" tvg-country="INT" group-title="Combate & Boxeo",DAZN Combat Rakuten
+https://dazn-combat-rakuten.amagi.tv/hls/amagi_hls_data_rakutenAA-dazn-combat-rakuten/CDN/master.m3u8
+#EXTINF:-1 tvg-name="Red Bull TV Deportes Extremos" tvg-logo="https://resources.redbull.com/logos/redbullcom/v3/redbullcom-logo.svg" tvg-country="INT" group-title="Deportes Extremos",Red Bull TV Deportes Extremos
+https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8
+#EXTINF:-1 tvg-name="Motorvision TV" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Motorvision_TV_Logo.png/512px-Motorvision_TV_Logo.png" tvg-country="INT" group-title="Automovilismo",Motorvision TV
+https://motorvision-samsungau.amagi.tv/playlist.m3u8
