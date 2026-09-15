@@ -6,7 +6,7 @@ async function fetchM3U(url) {
     const res = await fetch(url, {
       signal: AbortSignal.timeout(30000),
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) JUAMPI-TV/0.4.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) JUAMPI-TV/0.5.0'
       }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);

@@ -1,17 +1,27 @@
-Versión 0.4.0 de JUAMPI-TV para Google TV, Android TV y Web/PWA — "Magis TV Edition" con catálogo On Demand (VOD) de películas y series, señales deportivas de Argentina y diseño ultra-compacto optimizado para control remoto.
+Versión 0.5.0 de JUAMPI-TV para Google TV, Android TV y Web/PWA — "Netflix Redesign" con navegación fluida por carruseles horizontales, series organizadas por plataforma (Netflix, HBO Max, Disney+, Amazon Prime Video, Anime) con selector de temporadas y episodios, películas agrupadas por año de estreno y género, y deportes argentinos en vivo.
 
-## Novedades de la versión 0.4.0 (Magis TV Edition)
+## Novedades de la versión 0.5.0 (Netflix Redesign)
 
-- **Catálogo VOD On Demand de Películas (3.965+ títulos):** Catálogo real de películas completas a pedido, organizadas por géneros (Acción, Comedia, Drama, Terror, Ciencia Ficción, Animación, Suspenso, Romance, Clásicos) y años de estreno.
-- **Catálogo VOD On Demand de Series (6.135+ episodios y temporadas):** Maratones y series completas on-demand disponibles directamente para reproducir en tu Smart TV.
-- **Canales de Deportes de Argentina y Latinoamérica en Vivo:** Sección dedicada con TyC Sports, DeporTV, TV Pública, Showsport, Canal Rural, DSports, Fox Sports, ESPN Deportes, Claro Sports, FIFA+ y más señales de fútbol y polideportivo.
-- **Diseño Ultra-Compacto estilo Magis TV / Netflix:**
-  - Carátulas verticales (proporción 2:3) para películas y series: entran entre 8 y 10 pósters en simultáneo por fila en 1080p, evitando el scroll excesivo.
-  - Tarjetas horizontales compactas para TV en vivo y deportes con badges claros y números de señal.
-  - Cabecera y Hero reducidos al mínimo esencial para que el contenido sea visible inmediatamente sin navegar varias pantallas hacia abajo.
-- **Navegación espacial D-pad perfecta:** Compatibilidad absoluta con controles remotos de Google TV, Android TV, Fire TV y teclados físicos.
-- **Importador de Listas Privadas M3U:** Mantené tus propias listas M3U o proveedores Magis privados almacenados localmente en tu televisor de forma 100% privada y segura.
-- **Reproductor HLS y Nativo ExoPlayer:** Soporte de zapping instantáneo (◄ / ►), ajuste de aspecto (Ajustar, Zoom, 16:9), selección de pistas de audio y calidad.
+- **Diseño y Experiencia Estilo Netflix:**
+  - **Carruseles de Navegación Rápida:** Carruseles horizontales con scroll fluido, snap magnético y navegación D-pad limpia e intuitiva mediante control remoto.
+  - **Menú y Filtros Claros y Depurados:** Eliminación total de filtros cruzados y botones redundantes. Dock lateral limpio con: *Inicio*, *Películas*, *Series*, *Deportes*, *En vivo*, *Mi lista* y *Recientes*.
+  - **Billboard Destacado Dinámico (Hero):** Presentación cinemática de estrenos y eventos destacados con poster en alta definición, metadata y botones directos de acción (`Reproducir` y `+ Mi lista`).
+- **Series Agrupadas por Plataforma de Streaming:**
+  - Segmentación por marcas líderes: 🔴 **Netflix Originals**, 🟣 **HBO Max / Max**, 🔵 **Disney+ & Star+**, 🟢 **Amazon Prime Video**, 🎌 **Anime & Crunchyroll**, y grandes producciones de drama, misterio y comedia.
+  - **Selector Modal de Temporadas y Episodios:** Al seleccionar una serie se abre una ventana modal con portada oficial, ficha técnica, selector de episodios con numeración clara (T01 E01...) y botón de reproducción directa, evitando saturar la pantalla con miles de episodios individuales.
+- **Películas Agrupadas por Año y Género:**
+  - **Estrenos 2024 - 2025** con carátulas oficiales en alta resolución.
+  - **Aclamadas 2020 - 2023** y Éxitos de los 2010s.
+  - Clasificación por categorías: Acción, Ciencia Ficción, Comedia, Terror, Drama y Animación.
+- **Deportes Argentinos y Televisión en Directo:**
+  - Canales de TV abierta y señales de noticias de Argentina en directo (TyC Sports, DeporTV, TV Pública, TN, C5N, La Nación+, Crónica, etc.).
+  - Cobertura polideportiva y fútbol panregional.
+- **Soporte Completo de Control Remoto:**
+  - Navegación espacial D-pad bidimensional sin saltos en diagonal.
+  - Indicador de foco visual de alto contraste y elevación de póster al seleccionar.
+- **Compatibilidad y Privacidad:**
+  - Soporte de importación de listas M3U / M3U8 privadas almacenadas 100% en local.
+  - Reproductor integrado con ExoPlayer nativo en Android y HLS.js en navegadores.
 
 ## Instalar en Smart TV
 
