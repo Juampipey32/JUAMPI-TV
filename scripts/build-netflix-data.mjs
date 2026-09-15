@@ -1,12 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { POSTER_OVERRIDES } from './poster-overrides.mjs';
+import { POSTER_OVERRIDES, ID_OVERRIDES } from './poster-overrides.mjs';
 import { parseM3U } from '../src/playlist.js';
 
 async function fetchWithTimeout(url, ms = 20000) {
   try {
     const res = await fetch(url, {
       signal: AbortSignal.timeout(ms),
-      headers: { 'User-Agent': 'Mozilla/5.0 JUAMPI-TV/0.5.0' }
+      headers: { 'User-Agent': 'Mozilla/5.0 JUAMPI-TV/0.6.0' }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.text();
@@ -154,6 +154,9 @@ async function main() {
   for (const [name, data] of seriesMap.entries()) {
     const poster = POSTER_OVERRIDES[name.toLowerCase()] || await searchCinemeta(name, 'series');
     data.poster = poster;
+    const ids = ID_OVERRIDES[name.toLowerCase()] || {};
+    data.tmdbId = ids.tmdbId || null;
+    data.imdbId = ids.imdbId || null;
     // Sort episodes by season then episode
     data.episodes.sort((a, b) => (a.season - b.season) || (a.episode - b.episode));
     data.totalEpisodes = data.episodes.length;
@@ -161,7 +164,8 @@ async function main() {
 
     // Also output the first episode or all episodes into series.m3u8 for compatibility
     for (const ep of data.episodes) {
-      seriesM3U += `#EXTINF:-1 tvg-name="${name} S${String(ep.season).padStart(2,'0')}E${String(ep.episode).padStart(2,'0')}" tvg-logo="${poster}" group-title="${data.platform}",${ep.title}\n${ep.url}\n`;
+      const idAttrs = `${data.tmdbId ? ` tmdb-id="${data.tmdbId}"` : ''}${data.imdbId ? ` imdb-id="${data.imdbId}"` : ''}`;
+      seriesM3U += `#EXTINF:-1 tvg-name="${name} S${String(ep.season).padStart(2,'0')}E${String(ep.episode).padStart(2,'0')}" tvg-logo="${poster}"${idAttrs} group-title="${data.platform}",${ep.title}\n${ep.url}\n`;
     }
   }
 
@@ -199,8 +203,10 @@ async function main() {
       }
     }
 
+    const ids = ID_OVERRIDES[cleanLower] || {};
+    const idAttrs = `${ids.tmdbId ? ` tmdb-id="${ids.tmdbId}"` : ''}${ids.imdbId ? ` imdb-id="${ids.imdbId}"` : ''}`;
     const groupTitle = `${yearGroup} • ${genre}`;
-    movieM3U += `#EXTINF:-1 tvg-name="${cleanName.replace(/"/g, '')}" tvg-logo="${logo || ''}" group-title="${groupTitle}",${cleanName}\n${c.url}\n`;
+    movieM3U += `#EXTINF:-1 tvg-name="${cleanName.replace(/"/g, '')}" tvg-logo="${logo || ''}"${idAttrs} group-title="${groupTitle}",${cleanName}\n${c.url}\n`;
 
     enrichedMovies.push({
       id: c.id,

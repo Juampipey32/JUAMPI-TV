@@ -1,27 +1,26 @@
-Versión 0.5.0 de JUAMPI-TV para Google TV, Android TV y Web/PWA — "Netflix Redesign" con navegación fluida por carruseles horizontales, series organizadas por plataforma (Netflix, HBO Max, Disney+, Amazon Prime Video, Anime) con selector de temporadas y episodios, películas agrupadas por año de estreno y género, y deportes argentinos en vivo.
+Versión 0.6.0 de JUAMPI-TV para Google TV, Android TV y Web/PWA — "Streambert Universal Engine Edition" con arquitectura de múltiples servidores de reproducción, bloqueo nativo de anuncios y popups en Android, selector de servidor y conmutación por error (failover) automático.
 
-## Novedades de la versión 0.5.0 (Netflix Redesign)
+## Novedades de la versión 0.6.0 (Streambert Universal Engine)
 
-- **Diseño y Experiencia Estilo Netflix:**
-  - **Carruseles de Navegación Rápida:** Carruseles horizontales con scroll fluido, snap magnético y navegación D-pad limpia e intuitiva mediante control remoto.
-  - **Menú y Filtros Claros y Depurados:** Eliminación total de filtros cruzados y botones redundantes. Dock lateral limpio con: *Inicio*, *Películas*, *Series*, *Deportes*, *En vivo*, *Mi lista* y *Recientes*.
-  - **Billboard Destacado Dinámico (Hero):** Presentación cinemática de estrenos y eventos destacados con poster en alta definición, metadata y botones directos de acción (`Reproducir` y `+ Mi lista`).
-- **Series Agrupadas por Plataforma de Streaming:**
-  - Segmentación por marcas líderes: 🔴 **Netflix Originals**, 🟣 **HBO Max / Max**, 🔵 **Disney+ & Star+**, 🟢 **Amazon Prime Video**, 🎌 **Anime & Crunchyroll**, y grandes producciones de drama, misterio y comedia.
-  - **Selector Modal de Temporadas y Episodios:** Al seleccionar una serie se abre una ventana modal con portada oficial, ficha técnica, selector de episodios con numeración clara (T01 E01...) y botón de reproducción directa, evitando saturar la pantalla con miles de episodios individuales.
-- **Películas Agrupadas por Año y Género:**
-  - **Estrenos 2024 - 2025** con carátulas oficiales en alta resolución.
-  - **Aclamadas 2020 - 2023** y Éxitos de los 2010s.
-  - Clasificación por categorías: Acción, Ciencia Ficción, Comedia, Terror, Drama y Animación.
-- **Deportes Argentinos y Televisión en Directo:**
-  - Canales de TV abierta y señales de noticias de Argentina en directo (TyC Sports, DeporTV, TV Pública, TN, C5N, La Nación+, Crónica, etc.).
-  - Cobertura polideportiva y fútbol panregional.
-- **Soporte Completo de Control Remoto:**
-  - Navegación espacial D-pad bidimensional sin saltos en diagonal.
-  - Indicador de foco visual de alto contraste y elevación de póster al seleccionar.
-- **Compatibilidad y Privacidad:**
-  - Soporte de importación de listas M3U / M3U8 privadas almacenadas 100% en local.
-  - Reproductor integrado con ExoPlayer nativo en Android y HLS.js en navegadores.
+- **Arquitectura Multi-Servidor Universal (Inspirada en Streambert):**
+  - **Servidor 1 (HLS Directo):** Transmisión directa de alta velocidad optimizada para ExoPlayer en Android y HLS nativo.
+  - **Servidor 2 (Videasy HD):** Servidor universal embebido con soporte multilingüe y alta estabilidad para películas y series.
+  - **Servidor 3 (VidSrc Mirror):** Espejo de respaldo alternativo de alta disponibilidad.
+  - **Servidor 4 (Vidking Universal):** Servidor de redundancia universal.
+- **Bloqueo Nativo de Anuncios y Popups en Android TV (`MainActivity.java`):**
+  - Intercepción proactiva en WebView de más de 35 redes de anuncios, rastreadores y minería de datos (PopAds, Adsterra, Bet365, PropellerAds, Monetag, etc.).
+  - Supresión automática de ventanas emergentes (`setSupportMultipleWindows(false)`, `setJavaScriptCanOpenWindowsAutomatically(false)`).
+  - Bloqueo de redirecciones no deseadas sin interrumpir la reproducción.
+- **Selector de Servidores y Conmutación por Error (Failover):**
+  - **Selector de Servidor en el Reproductor:** Selector directo de servidor en la barra de control del reproductor.
+  - **Selector de Servidor en Selector de Series:** Posibilidad de preseleccionar el servidor deseado para los episodios de una serie.
+  - **Cartel de Conmutación Inmediata:** Si una señal directa experimenta fallos o restricciones geográficas, aparece automáticamente una tarjeta con botones de 1 clic para cambiar a Servidor 2 (Videasy) o Servidor 3 (VidSrc).
+- **Mapeo y Enriquecimiento de Metadatos:**
+  - Enriquecimiento automático de identificadores IMDb y TMDB para los títulos principales y catálogo de series/películas.
+  - Resolución dinámica con Cinemeta para títulos adicionales sin necesidad de claves API.
+- **Control Remoto y Zapping Mejorado:**
+  - Control de canal anterior y siguiente (`⏮ / ⏭`) compatible con mandos de TV.
+  - Pantalla completa adaptable tanto para video nativo como para reproductores embebidos.
 
 ## Instalar en Smart TV
 

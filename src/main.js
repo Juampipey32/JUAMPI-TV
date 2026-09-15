@@ -1,15 +1,18 @@
 import {
   createIcons, House, Radio, Film, Tv, Bookmark, History, ListPlus, Plus, Play, Pause,
   Search, RefreshCw, ArrowDown, ArrowUpRight, X, RotateCw, PictureInPicture2, Maximize,
-  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling, Trophy, Info, Sparkles, Flame
+  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling, Trophy, Info, Sparkles, Flame,
+  Server, AlertTriangle
 } from 'lucide';
 
 const icons = {
   House, Radio, Film, Tv, Bookmark, History, ListPlus, Plus, Play, Pause,
   Search, RefreshCw, ArrowDown, ArrowUpRight, X, RotateCw, PictureInPicture2, Maximize,
-  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling, Trophy, Info, Sparkles, Flame
+  ExternalLink, Upload, SkipBack, SkipForward, Volume2, VolumeX, Scaling, Trophy, Info, Sparkles, Flame,
+  Server, AlertTriangle
 };
 
+import { STREAM_PROVIDERS, resolveMediaId } from './providers.js';
 import { parseM3U } from './playlist.js';
 import './style.css';
 import './tv.css';
@@ -76,6 +79,9 @@ const FEATURED_ITEMS = {
     desc: 'Años después de presenciar la muerte del admirado héroe Máximo, Lucio debe ingresar al Coliseo tras la caída de su hogar en manos de los tiranos emperadores de Roma.',
     poster: 'https://m.media-amazon.com/images/M/MV5BMWYzZTM5ZGQtOGE5My00NmM2LWFlMDEtMGNjYjdmOWM1MzA1XkEyXkFqcGc@._V1_SX300.jpg',
     url: 'http://live.stablechannels.tv:80/movie/E0KEkrd46/q7bFf1Y50/13243.mp4',
+    tmdbId: '933260',
+    imdbId: 'tt9218128',
+    type: 'movie',
     group: 'Estrenos 2024 - 2025'
   },
   movies: {
@@ -85,6 +91,9 @@ const FEATURED_ITEMS = {
     desc: 'Wade Wilson intenta llevar una vida civil tranquila, pero cuando una amenaza existencial pone en jaque su universo, debe convencer a un renuente Wolverine.',
     poster: 'https://m.media-amazon.com/images/M/MV5BZTk5ODY0MmQtMzA3Ni00NGY1LThiYzItZThiNjFiNDM4MTM3XkEyXkFqcGc@._V1_SX300.jpg',
     url: 'http://live.stablechannels.tv:80/movie/E0KEkrd46/q7bFf1Y50/13240.mp4',
+    tmdbId: '533535',
+    imdbId: 'tt6263850',
+    type: 'movie',
     group: 'Acción & Aventura'
   },
   series: {
@@ -94,6 +103,9 @@ const FEATURED_ITEMS = {
     desc: 'En un pequeño pueblo donde todos se conocen, un incidente desata una serie de acontecimientos que llevan a la desaparición de un niño, revelando experimentos secretos y fuerzas paranormales.',
     poster: 'https://m.media-amazon.com/images/M/MV5BMjEzMDAxOTUyMV5BMl5BanBnXkFtZTgwNzAxMzYzOTE@._V1_SX300.jpg',
     seriesName: 'Stranger Things',
+    tmdbId: '66732',
+    imdbId: 'tt4574334',
+    type: 'series',
     group: 'Ciencia Ficción'
   },
   sports: {
@@ -103,6 +115,7 @@ const FEATURED_ITEMS = {
     desc: 'Toda la pasión de la Liga Profesional de Fútbol, la Selección Argentina, Copa Argentina, básquet, vóley y automovilismo las 24 horas.',
     poster: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/TyC_Sports_logo.svg/512px-TyC_Sports_logo.svg.png',
     url: 'http://45.181.87.106/TYCSPORTSHD/index.m3u8',
+    type: 'sports',
     group: 'Deportes Argentina'
   },
   live: {
@@ -112,6 +125,7 @@ const FEATURED_ITEMS = {
     desc: 'Canal público argentino dedicado al deporte federal, torneos nacionales e internacionales en alta definición.',
     poster: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/DeporTV_%28Argentina%29_logo_2016.png/512px-DeporTV_%28Argentina%29_logo_2016.png',
     url: 'https://5fb24b460df87.streamlock.net/live-cont.ar/deportv/playlist.m3u8',
+    type: 'live',
     group: 'Televisión Abierta'
   }
 };
@@ -135,7 +149,7 @@ $('#app').innerHTML = `
 <main>
   <header>
     <div class="header-left">
-      <a href="#" class="wordmark">JUAMPI<span>—TV</span><small>NETFLIX ED. 0.5.0</small></a>
+      <a href="#" class="wordmark">JUAMPI<span>—TV</span><small>STREAMBERT ED. 0.6.0</small></a>
     </div>
     <div class="header-right">
       <label class="search-bar">
@@ -172,7 +186,7 @@ $('#app').innerHTML = `
   <footer>
     <span class="wordmark">JUAMPI<span>—TV</span></span>
     <p>Tu plataforma integral de entretenimiento · Optimizada para control remoto en Google TV y Android TV</p>
-    <span>NETFLIX STYLE EXPERIENCE ↗</span>
+    <span>STREAMBERT UNIVERSAL ENGINE ↗</span>
   </footer>
 </main>
 
@@ -188,6 +202,15 @@ $('#app').innerHTML = `
         <h2 id="series-modal-title">Nombre de la Serie</h2>
         <div class="series-modal-meta" id="series-modal-meta">10 episodios • Drama</div>
         <p class="series-modal-desc" id="series-modal-desc">Descripción de la serie en JUAMPI-TV.</p>
+        <div class="series-server-row">
+          <label for="series-server-select">${icon('server')} Servidor:</label>
+          <select id="series-server-select" class="series-server-select" aria-label="Servidor para serie">
+            <option value="default">Servidor 1 (HLS Directo)</option>
+            <option value="videasy">Servidor 2 (Videasy HD)</option>
+            <option value="vidsrc">Servidor 3 (VidSrc Mirror)</option>
+            <option value="vidking">Servidor 4 (Vidking Universal)</option>
+          </select>
+        </div>
         <button id="series-modal-play-first" class="primary">${icon('play')} Reproducir Episodio 1</button>
       </div>
     </div>
@@ -205,11 +228,37 @@ $('#app').innerHTML = `
       <h2 id="playing-name"></h2>
       <div class="player-sub" id="player-channel-meta">Canal 01</div>
     </div>
+    <div class="player-server-box">
+      <label for="server-select" class="server-label">${icon('server')} Servidor:</label>
+      <select id="server-select" class="server-select" aria-label="Seleccionar servidor de transmisión">
+        <option value="default">Servidor 1 (HLS Directo)</option>
+        <option value="videasy">Servidor 2 (Videasy HD)</option>
+        <option value="vidsrc">Servidor 3 (VidSrc Mirror)</option>
+        <option value="vidking">Servidor 4 (Vidking Universal)</option>
+      </select>
+    </div>
     <button id="close-player" class="icon-button" aria-label="Cerrar reproductor">${icon('x')}</button>
   </div>
 
   <div class="video-wrap">
     <video id="video" playsinline></video>
+    <iframe id="player-embed" class="embed-player" hidden allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
+  </div>
+
+  <div id="player-failover" class="player-failover" hidden>
+    <div class="failover-box">
+      <div class="failover-msg">
+        <span class="failover-icon">${icon('alert-triangle')}</span>
+        <div>
+          <strong>¿Problemas con la señal directa?</strong>
+          <p>Podés cambiar de inmediato a los servidores universales sin publicidad.</p>
+        </div>
+      </div>
+      <div class="failover-buttons">
+        <button id="failover-videasy" class="failover-btn primary">${icon('server')} Servidor 2 (Videasy HD)</button>
+        <button id="failover-vidsrc" class="failover-btn glass">${icon('server')} Servidor 3 (VidSrc Mirror)</button>
+      </div>
+    </div>
   </div>
 
   <div id="player-status" role="status"></div>
@@ -520,6 +569,8 @@ function render() {
   refreshIcons();
 }
 
+let currentProvider = 'default';
+
 function openSeriesModal(series) {
   const dialog = $('#series-dialog');
   if (!dialog) return;
@@ -528,12 +579,31 @@ function openSeriesModal(series) {
   $('#series-modal-platform').textContent = series.platform.toUpperCase();
   $('#series-modal-title').textContent = series.name;
   $('#series-modal-meta').textContent = `${series.totalEpisodes} episodios • ${series.genre}`;
-  $('#series-modal-desc').textContent = `Disfrutá de todas las temporadas y episodios de ${series.name} en JUAMPI-TV sin publicidad ni cortes.`;
+  $('#series-modal-desc').textContent = `Disfrutá de todas las temporadas y episodios de ${series.name} en JUAMPI-TV sin cortes ni publicidad.`;
+
+  let selectedServer = 'default';
+  const serverSelect = $('#series-server-select');
+  if (serverSelect) {
+    serverSelect.value = 'default';
+    serverSelect.onchange = (e) => {
+      selectedServer = e.target.value;
+    };
+  }
 
   const playFirstBtn = $('#series-modal-play-first');
   playFirstBtn.onclick = () => {
     dialog.close();
-    if (series.episodes[0]) play(series.episodes[0]);
+    if (series.episodes[0]) {
+      play({
+        ...series.episodes[0],
+        name: series.episodes[0].title,
+        seriesName: series.name,
+        tmdbId: series.tmdbId,
+        imdbId: series.imdbId,
+        type: 'series',
+        group: series.name
+      }, selectedServer);
+    }
   };
 
   const grid = $('#series-episodes-grid');
@@ -549,7 +619,17 @@ function openSeriesModal(series) {
     btn.onclick = () => {
       dialog.close();
       const ep = series.episodes.find(e => e.url === btn.dataset.playEp);
-      if (ep) play(ep);
+      if (ep) {
+        play({
+          ...ep,
+          name: ep.title,
+          seriesName: series.name,
+          tmdbId: series.tmdbId,
+          imdbId: series.imdbId,
+          type: 'series',
+          group: series.name
+        }, selectedServer);
+      }
     };
   });
 
@@ -569,21 +649,47 @@ function stop() {
     video.pause();
     video.removeAttribute('src');
     video.load();
+    video.hidden = false;
   }
+  const embed = $('#player-embed');
+  if (embed) {
+    embed.src = 'about:blank';
+    embed.hidden = true;
+  }
+  $('#player-failover')?.setAttribute('hidden', '');
 }
 
-async function play(channel) {
+async function play(channel, providerId = 'default') {
   if (!channel) return;
   if (channel.id) {
     history = [channel.id, ...history.filter(id => id !== channel.id)].slice(0, 50);
     save('jtv-history', history);
   }
 
-  if (isTV && window.JuampiNative && !channel.external) {
+  current = channel;
+  currentProvider = providerId;
+  stop();
+
+  const titleName = channel.name || channel.title || 'Reproduciendo';
+  $('#playing-name').textContent = titleName;
+  $('#player-category').textContent = (channel.group || 'REPRODUCCIÓN').toUpperCase();
+  $('#player-channel-meta').textContent = `${titleName} · JUAMPI-TV`;
+  $('#external').href = channel.url || '#';
+  $('#quality').innerHTML = '<option value="-1">Calidad automática</option>';
+  $('#quality').disabled = true;
+  $('#audio-tracks').hidden = true;
+  $('#player-failover')?.setAttribute('hidden', '');
+  if ($('#server-select')) $('#server-select').value = providerId;
+
+  const isEmbedProvider = providerId !== 'default';
+  const provider = STREAM_PROVIDERS.find(p => p.id === providerId) || STREAM_PROVIDERS[0];
+
+  // Android TV native ExoPlayer for direct HLS/MP4 streams
+  if (!isEmbedProvider && isTV && window.JuampiNative && !channel.external) {
     window.JuampiNative.postMessage(JSON.stringify({
       action: 'play',
       url: channel.url,
-      name: channel.name || channel.title,
+      name: titleName,
       group: channel.group || 'JUAMPI-TV',
       index: 1,
       total: 1
@@ -591,22 +697,64 @@ async function play(channel) {
     return;
   }
 
-  stop();
-  current = channel;
-  const video = $('#video');
-  const titleName = channel.name || channel.title || 'Reproduciendo';
-  $('#playing-name').textContent = titleName;
-  $('#player-category').textContent = (channel.group || 'REPRODUCCIÓN').toUpperCase();
-  $('#player-channel-meta').textContent = `${titleName} · JUAMPI-TV`;
-  $('#external').href = channel.url;
-  $('#quality').innerHTML = '<option value="-1">Calidad automática</option>';
-  $('#quality').disabled = true;
-  $('#audio-tracks').hidden = true;
+  if (!$('#player').open) $('#player').showModal();
 
+  const video = $('#video');
+  const embed = $('#player-embed');
+
+  if (isEmbedProvider) {
+    video.hidden = true;
+    embed.hidden = false;
+    $('#retry').hidden = false;
+    $('#pip').hidden = true;
+    $('#fullscreen').hidden = false;
+    $('#quality').hidden = true;
+    $('#prev-channel').hidden = true;
+    $('#next-channel').hidden = true;
+    $('#play-pause').hidden = true;
+    $('#aspect-ratio').hidden = true;
+    $('#volume-slider').hidden = true;
+    $('#mute-toggle').hidden = true;
+    $('.video-wrap').hidden = false;
+    $('#player-status').textContent = `Conectando con ${provider.name}…`;
+
+    let mediaId = channel.imdbId || channel.tmdbId;
+    const mediaType = (channel.type === 'series' || channel.season !== undefined) ? 'series' : 'movie';
+    const queryTitle = channel.seriesName || channel.name || channel.title;
+
+    if (!mediaId) {
+      $('#player-status').textContent = `Buscando título en ${provider.name}…`;
+      mediaId = await resolveMediaId(queryTitle, mediaType);
+    }
+
+    if (!mediaId) {
+      $('#player-status').textContent = `No se encontró identificación universal para "${titleName}".`;
+      $('#player-failover')?.removeAttribute('hidden');
+      return;
+    }
+
+    let embedUrl = '';
+    if (mediaType === 'series') {
+      const s = channel.season || 1;
+      const e = channel.episode || 1;
+      embedUrl = provider.tvUrl(mediaId, s, e);
+    } else {
+      embedUrl = provider.movieUrl(mediaId);
+    }
+
+    embed.src = embedUrl;
+    $('#player-status').textContent = `● Reproduciendo en ${provider.name} (${provider.tag})`;
+    return;
+  }
+
+  // Provider 'default' (Direct HLS/MP4)
+  embed.hidden = true;
+  embed.src = 'about:blank';
+  video.hidden = false;
   video.style.objectFit = currentAspect;
   video.volume = isMuted ? 0 : currentVolume;
-
-  if (!$('#player').open) $('#player').showModal();
+  $('#volume-slider').hidden = false;
+  $('#mute-toggle').hidden = false;
 
   if (channel.external) {
     $('#retry').hidden = true;
@@ -635,8 +783,9 @@ async function play(channel) {
   $('#player-status').textContent = 'Conectando con el contenido…';
 
   timeout = setTimeout(() => {
-    $('#player-status').textContent = 'El contenido no responde. Podés reintentar con el botón de abajo.';
-  }, 20000);
+    $('#player-status').textContent = 'La señal no responde. Podés reintentar o cambiar de servidor.';
+    $('#player-failover')?.removeAttribute('hidden');
+  }, 12000);
 
   const start = () => video.play().catch(() => {
     $('#player-status').textContent = 'Tocá Reproducir para iniciar el video.';
@@ -650,6 +799,7 @@ async function play(channel) {
     if (run === playbackRun) {
       clearTimeout(timeout);
       $('#player-status').textContent = 'No se pudo cargar el reproductor HLS.';
+      $('#player-failover')?.removeAttribute('hidden');
     }
     return;
   }
@@ -675,7 +825,8 @@ async function play(channel) {
     hls.on(Hls.Events.ERROR, (_, data) => {
       if (data.fatal) {
         clearTimeout(timeout);
-        $('#player-status').textContent = 'No se pudo reproducir este stream. Puede estar caído o tener restricción geográfica.';
+        $('#player-status').textContent = 'No se pudo reproducir este stream directo.';
+        $('#player-failover')?.removeAttribute('hidden');
         hls?.destroy();
         hls = null;
       }
@@ -685,9 +836,35 @@ async function play(channel) {
     start();
   } else {
     clearTimeout(timeout);
-    $('#player-status').textContent = 'Tu navegador no admite este formato directamente.';
+    $('#player-status').textContent = 'Formato directo no admitido en este navegador.';
+    $('#player-failover')?.removeAttribute('hidden');
   }
 }
+
+function getActivePlaylist() {
+  if (current?.type === 'series') return [];
+  if (view === 'movies') return catalogs.movies;
+  if (view === 'sports') return catalogs.sports;
+  return catalogs.live;
+}
+
+window.juampiNextChannel = () => {
+  const list = getActivePlaylist();
+  if (!list.length || !current) return false;
+  const idx = list.findIndex(x => x.id === current.id || x.url === current.url);
+  const next = list[(idx + 1) % list.length];
+  if (next) { play(next, currentProvider); return true; }
+  return false;
+};
+
+window.juampiPrevChannel = () => {
+  const list = getActivePlaylist();
+  if (!list.length || !current) return false;
+  const idx = list.findIndex(x => x.id === current.id || x.url === current.url);
+  const prev = list[(idx - 1 + list.length) % list.length];
+  if (prev) { play(prev, currentProvider); return true; }
+  return false;
+};
 
 // Aspect ratio toggle
 window.juampiToggleAspect = () => {
@@ -718,9 +895,10 @@ $('#video').addEventListener('pause', () => {
 });
 
 $('#video').addEventListener('error', () => {
-  if (current) {
+  if (current && currentProvider === 'default') {
     clearTimeout(timeout);
-    $('#player-status').textContent = 'Error al reproducir el video. Podés reintentar.';
+    $('#player-status').textContent = 'Error al reproducir la señal directa.';
+    $('#player-failover')?.removeAttribute('hidden');
   }
 });
 
@@ -729,6 +907,8 @@ $('#play-pause').onclick = () => {
   if (v.paused) v.play(); else v.pause();
 };
 
+$('#prev-channel').onclick = () => window.juampiPrevChannel();
+$('#next-channel').onclick = () => window.juampiNextChannel();
 $('#aspect-ratio').onclick = () => window.juampiToggleAspect();
 
 $('#mute-toggle').onclick = () => {
@@ -757,7 +937,20 @@ $('#audio-tracks').onchange = e => {
   if (hls) hls.audioTrack = Number(e.target.value);
 };
 
-$('#retry').onclick = () => current && play(current);
+$('#server-select').onchange = e => {
+  if (current) play(current, e.target.value);
+};
+
+$('#failover-videasy').onclick = () => {
+  if (current) play(current, 'videasy');
+};
+
+$('#failover-vidsrc').onclick = () => {
+  if (current) play(current, 'vidsrc');
+};
+
+$('#retry').onclick = () => current && play(current, currentProvider);
+
 $('#pip').onclick = async () => {
   try {
     if (document.pictureInPictureElement) await document.exitPictureInPicture();
@@ -766,18 +959,23 @@ $('#pip').onclick = async () => {
     toast('Mini reproductor no disponible en este dispositivo.');
   }
 };
+
 $('#fullscreen').onclick = async () => {
   try {
+    const target = (currentProvider !== 'default' && $('#player-embed')) ? $('#player-embed') : $('.video-wrap');
     if (document.fullscreenElement) await document.exitFullscreen();
-    else await $('#video').requestFullscreen();
+    else if (target.requestFullscreen) await target.requestFullscreen();
+    else if ($('#video').requestFullscreen) await $('#video').requestFullscreen();
   } catch {
     toast('No se pudo activar pantalla completa.');
   }
 };
+
 $('#close-player').onclick = () => $('#player').close();
 $('#player').addEventListener('close', () => {
   stop();
   current = null;
+  currentProvider = 'default';
   if (view === 'history') render();
 });
 
@@ -831,11 +1029,19 @@ document.addEventListener('click', async e => {
   // Play button on movie or live channel
   if (b.dataset.play) {
     const id = b.dataset.play;
-    const item = catalogs.movies.find(m => m.id === id) ||
-                 catalogs.sports.find(s => s.id === id) ||
-                 catalogs.live.find(c => c.id === id);
-    if (item) {
-      play(item);
+    const movie = catalogs.movies.find(m => m.id === id);
+    if (movie) {
+      play({ ...movie, type: 'movie' });
+      return;
+    }
+    const sport = catalogs.sports.find(s => s.id === id);
+    if (sport) {
+      play({ ...sport, type: 'sports' });
+      return;
+    }
+    const live = catalogs.live.find(c => c.id === id);
+    if (live) {
+      play({ ...live, type: 'live' });
       return;
     }
   }

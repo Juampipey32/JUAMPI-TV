@@ -35,11 +35,62 @@ import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 import org.json.JSONObject;
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 
 @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
 public class MainActivity extends Activity {
     private static final String ORIGIN = "https://appassets.androidplatform.net";
+    private static final String[] BLOCKED_AD_HOSTS = {
+        "google-analytics.com",
+        "googletagmanager.com",
+        "googletagservices.com",
+        "doubleclick.net",
+        "adservice.google.com",
+        "pagead2.googlesyndication.com",
+        "stats.g.doubleclick.net",
+        "cdn.adx1.com",
+        "intelligenceadx.com",
+        "adsco.re",
+        "mc.yandex.com",
+        "mc.yandex.ru",
+        "bvtpk.com",
+        "my.rtmark.net",
+        "b7510.com",
+        "users.videasy.net",
+        "sixmossin.com",
+        "realizationnewestfangs.com",
+        "acscdn.com",
+        "profitableratecpm.com",
+        "preferencenail.com",
+        "protrafficinspector.com",
+        "histats.com",
+        "weirdopt.com",
+        "cloudflareinsights.com",
+        "usrpubtrk.com",
+        "adexchangeclear.com",
+        "rzjzjnavztycv.online",
+        "cloudnestra.com",
+        "neonhorizonworkshops.com",
+        "popads.net",
+        "adcash.com",
+        "propellerads.com",
+        "exoclick.com",
+        "adnxs.com",
+        "exosrv.com"
+    };
+
+    private boolean isAdHost(String host) {
+        if (host == null) return false;
+        String h = host.toLowerCase();
+        for (String blocked : BLOCKED_AD_HOSTS) {
+            if (h.equals(blocked) || h.endsWith("." + blocked)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private FrameLayout root;
     WebView web;
     ExoPlayer player;
@@ -79,19 +130,27 @@ public class MainActivity extends Activity {
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
-        settings.setMediaPlaybackRequiresUserGesture(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setJavaScriptCanOpenWindowsAutomatically(false);
+        settings.setSupportMultipleWindows(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-        settings.setUserAgentString(settings.getUserAgentString() + " JuampiTV/0.5.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " JuampiTV/0.6.0");
         final WebViewAssetLoader loader = new WebViewAssetLoader.Builder()
             .addPathHandler("/", new WebViewAssetLoader.AssetsPathHandler(this)).build();
         web.setWebViewClient(new WebViewClientCompat() {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return loader.shouldInterceptRequest(request.getUrl());
+                Uri url = request.getUrl();
+                if (url != null && isAdHost(url.getHost())) {
+                    return new WebResourceResponse("text/plain", "UTF-8", new ByteArrayInputStream(new byte[0]));
+                }
+                return loader.shouldInterceptRequest(url);
             }
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 if ("https".equals(uri.getScheme()) && "appassets.androidplatform.net".equals(uri.getHost())) return false;
-                if (request.isForMainFrame()) openExternal(uri);
+                if (isAdHost(uri.getHost())) return true;
+                if (!request.isForMainFrame()) return false;
+                openExternal(uri);
                 return true;
             }
         });
